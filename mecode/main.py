@@ -180,6 +180,7 @@ class G(object):
 
         self._socket = None
         self._p = None
+        self.laser_mode = False;
 
         # If the user passes in a line ending then we need to open the output
         # file in binary mode, otherwise python will try to be smart and
@@ -277,6 +278,39 @@ class G(object):
         self.write('G1 F{}'.format(rate))
         self.speed = rate
 
+    def laser(self, mode=None, power=None):
+        # mode=off, constant, dynamic
+        if mode is not None:
+            if mode == "off":
+                if self.laser_mode:
+                    self.write('M5 ;laser off')
+            else:
+                if not self.laser_mode:
+                    self.laser_mode = True;
+                    self.write('$32=1 ;enable laser mode in GRBL')
+
+            if mode == 'constant':
+                self.write('M3 ;laser constant power')
+            elif mode == 'dynamic':
+                self.write('M4 ;laser dynamic power')
+
+        if power is not None:
+            self.write('S {}'.format(power))
+
+    def spindle(self, mode=None, speed=None):
+        if speed is not None:
+            self.write('S {}'.format(speed))
+
+        if mode is not None:
+            if mode == "CW":
+                self.write('M3 ;spindle CW')
+            elif mode == "CCW":
+                self.write('M4 ;spindle CCW')
+            else:
+                self.write('M5 ;spindle off')
+
+
+
     def dwell(self, time):
         """ Pause code executions for the given amount of time.
 
@@ -312,6 +346,10 @@ class G(object):
             waits to return until all buffered lines have been acknowledged.
 
         """
+        if self.laser_mode:
+            self.laser(mode='off')
+            self.write('$32=0 ;disable laser mode in GRBL')
+
         if self.out_fd is not None:
             if self.aerotech_include is True:
                 with open(os.path.join(HERE, 'footer.txt')) as fd:
