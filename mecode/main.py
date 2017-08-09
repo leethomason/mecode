@@ -284,12 +284,12 @@ class G(object):
         comment = ''
 
         if mode is not None:
-            if mode != "off":
+            if mode != 'off':
                 if not self.laser_mode:
                     self.laser_mode = True;
                     self.write('$32=1 ;enable laser mode in GRBL')
 
-            if mode == 'off'
+            if mode == 'off':
                 cmd = 'M5'
                 comment = ' ;laser off'
             if mode == 'constant':
