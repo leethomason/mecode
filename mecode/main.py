@@ -280,36 +280,49 @@ class G(object):
 
     def laser(self, mode=None, power=None):
         # mode=off, constant, dynamic
+        cmd = ''
+        comment = ''
+
         if mode is not None:
-            if mode == "off":
-                if self.laser_mode:
-                    self.write('M5 ;laser off')
-            else:
+            if mode != "off":
                 if not self.laser_mode:
                     self.laser_mode = True;
                     self.write('$32=1 ;enable laser mode in GRBL')
 
+            if mode == 'off'
+                cmd = 'M5'
+                comment = ' ;laser off'
             if mode == 'constant':
-                self.write('M3 ;laser constant power')
+                cmd = 'M3'
+                comment = ' ;laser constant power'
             elif mode == 'dynamic':
-                self.write('M4 ;laser dynamic power')
+                cmd = 'M4'
+                comment = ' ;laser dynamic power'
 
         if power is not None:
-            self.write('S {}'.format(power))
+            cmd += ('S {}'.format(power))
+
+        self.write(cmd + comment)
 
     def spindle(self, mode=None, speed=None):
-        if speed is not None:
-            self.write('S {}'.format(speed))
+        cmd = ''
+        comment = ''
 
         if mode is not None:
             if mode == "CW":
-                self.write('M3 ;spindle CW')
+                cmd = 'M3'
+                comment = ' ;spindle CW'
             elif mode == "CCW":
-                self.write('M4 ;spindle CCW')
+                cmd = 'M4'
+                comment = ' ;spindle CCW'
             else:
-                self.write('M5 ;spindle off')
+                cmd = 'M5'
+                comment = ' ;spindle off'
 
+        if speed is not None:
+            cmd += ('S {}'.format(speed))
 
+        self.write(cmd + comment)
 
     def dwell(self, time):
         """ Pause code executions for the given amount of time.
