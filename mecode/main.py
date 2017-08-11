@@ -294,10 +294,10 @@ class G(object):
                 comment = ' ;laser off'
             if mode == 'constant':
                 cmd = 'M3'
-                comment = ' ;laser constant power'
+                comment = ' ;laser on, constant power'
             elif mode == 'dynamic':
                 cmd = 'M4'
-                comment = ' ;laser dynamic power'
+                comment = ' ;laser on, dynamic power'
 
         if power is not None:
             cmd += ('S {}'.format(power))

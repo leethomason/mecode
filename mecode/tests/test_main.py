@@ -755,6 +755,14 @@ class TestG(TestGFixture):
         assert(type(lines[0]) == bytes)
         outfile.close()
 
+    def test_laser(self):
+        gLaser = G()
+        gLaser.laser("dynamic")
+        self.expect_cmd("""
+        $32=1 ;enable laser mode in GRBL
+        M4 ;laser on, dynamic power
+        """)
+        self.assert_output()
 
 if __name__ == '__main__':
     unittest.main()
