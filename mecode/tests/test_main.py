@@ -756,8 +756,7 @@ class TestG(TestGFixture):
         outfile.close()
 
     def test_laser(self):
-        gLaser = G()
-        gLaser.laser("dynamic")
+        self.g.laser("dynamic")
         self.expect_cmd("""
         $32=1 ;enable laser mode in GRBL
         M4 ;laser on, dynamic power
