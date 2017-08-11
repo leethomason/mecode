@@ -236,7 +236,8 @@ class G(object):
 
         """
         args = self._format_args(x, y, z, **kwargs)
-        self.write('G92 ' + args + ' ;set home to current position')
+        space = ' ' if len(args) > 0 else ''
+        self.write('G92' + space + args + ' ;set home');
 
         self._update_current_position(mode='absolute', x=x, y=y, z=z, **kwargs)
 
@@ -254,7 +255,7 @@ class G(object):
 
         """
         if not self.is_relative:
-            self.write('G91 ;relative coordinates')
+            self.write('G91 ;relative')
             self.is_relative = True
 
     def absolute(self):
@@ -263,7 +264,7 @@ class G(object):
 
         """
         if self.is_relative:
-            self.write('G90 ;absolute coordinates')
+            self.write('G90 ;absolute')
             self.is_relative = False
 
     def feed(self, rate):
@@ -333,7 +334,7 @@ class G(object):
             Time in milliseconds to pause code execution.
 
         """
-        self.write('G4 P{} ;pause'.format(time))
+        self.write('G4 P{}'.format(time))
 
     # Composed Functions  #####################################################
 
@@ -344,9 +345,9 @@ class G(object):
         """
         self._write_header()
         if self.is_relative:
-            self.write('G91 ;relative coordinates')
+            self.write('G91 ;relative')
         else:
-            self.write('G90 ;absolute coordinates')
+            self.write('G90 ;absolute')
 
     def teardown(self, wait=True):
         """ Close the outfile file after writing the footer if opened. This
@@ -511,9 +512,9 @@ class G(object):
             axis = self.z_axis
 
         if direction == 'CW':
-            command = 'G2 ;CW'
+            command = 'G2'
         elif direction == 'CCW':
-            command = 'G3 ;CCW'
+            command = 'G3'
 
         values = [v for v in dims.values()]
         if self.is_relative:
