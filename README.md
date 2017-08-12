@@ -1,7 +1,7 @@
 Mecode
 ======
 
-[![Build Status](https://travis-ci.org/jminardi/mecode.svg?branch=master)](https://travis-ci.org/jminardi/mecode)
+[![Build Status](https://travis-ci.org/leethomason/mecode.svg?branch=master)](https://travis-ci.org/leethomason/mecode)
 
 ### GCode for all
 
