@@ -338,7 +338,6 @@ class TestG(TestGFixture):
 
         self.g.arc(x=5, A=0, direction='CCW', radius=5)
         self.expect_cmd("""
-        G16 X Y A ;coordinate axis assignment
         G18 ;XZ plane
         G3 X5.000000 A0.000000 R5.000000
         """)
@@ -347,7 +346,6 @@ class TestG(TestGFixture):
 
         self.g.arc(x=0, y=10, helix_dim='D', helix_len=10)
         self.expect_cmd("""
-        G16 X Y D ;coordinate axis assignment
         G17 ;XY plane
         G2 X0.000000 Y10.000000 R5.000000 G1 D10
         """)
@@ -356,7 +354,6 @@ class TestG(TestGFixture):
 
         self.g.arc(0, 10, helix_dim='D', helix_len=10)
         self.expect_cmd("""
-        G16 X Y D ;coordinate axis assignment
         G17 ;XY plane
         G2 X0.000000 Y10.000000 R5.000000 G1 D10
         """)
@@ -569,7 +566,6 @@ class TestG(TestGFixture):
     def test_clip(self):
         self.g.clip()
         self.expect_cmd("""
-        G16 X Y Z ;coordinate axis assignment
         G18 ;XZ plane
         G3 X0.000000 Z4.000000 R2.000000
         """)
@@ -578,7 +574,6 @@ class TestG(TestGFixture):
 
         self.g.clip(axis='A', direction='-y', height=10)
         self.expect_cmd("""
-        G16 X Y A ;coordinate axis assignment
         G19 ;YZ plane
         G2 Y0.000000 A10.000000 R5.000000
         """)
@@ -587,7 +582,6 @@ class TestG(TestGFixture):
 
         self.g.clip(axis='A', direction='-y', height=-10)
         self.expect_cmd("""
-        G16 X Y A ;coordinate axis assignment
         G19 ;YZ plane
         G3 Y0.000000 A-10.000000 R5.000000
         """)
@@ -640,7 +634,6 @@ class TestG(TestGFixture):
         self.assert_position({'x': 40.0, 'y': 30.0, 'z': 40, 'A': 10, 'B': 30,
                               'W': 10})
         self.expect_cmd("""
-        G16 X Y B ;coordinate axis assignment
         G18 ;XZ plane
         G2 X10.000000 B10.000000 R7.071068
         """)
@@ -651,7 +644,6 @@ class TestG(TestGFixture):
                               'W': 10})
         self.expect_cmd("""
         G90 ;absolute
-        G16 X Y B ;coordinate axis assignment
         G18 ;XZ plane 
         G2 X0.000000 B0.000000 R28.284271
         G91 ;relative
