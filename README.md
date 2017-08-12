@@ -10,6 +10,15 @@ can not convert CAD models to 3D printer ready code. It simply provides a
 convenient, human-readable layer just above GCode. If you often find
 yourself manually writing your own GCode, then mecode is for you.
 
+#### This Fork ####
+
+Although PRs are and will be submitted back upstream, this fork has some
+specific additional goals:
+- support for spindle
+- support for laser
+- commenting and basic documentation of the gcode output
+- GRBL 1.1 support / compliance
+
 Basic Use
 ---------
 To use, simply instantiate the `G` object and use its methods to trace your
