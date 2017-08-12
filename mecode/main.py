@@ -323,6 +323,10 @@ class G(object):
         if speed is not None:
             cmd += ('S {}'.format(speed))
 
+        if mode is None and speed is None:
+            cmd = 'M5'
+            comment = ' ;spindle off'
+
         self.write(cmd + comment)
 
     def dwell(self, time):
@@ -552,8 +556,8 @@ class G(object):
             filament_length = ((4*volume)/(3.14149*self.filament_diameter**2))*self.extrusion_multiplier
             dims['E'] = filament_length + current_extruder_position
 
-        if axis is not None:
-            self.write('G16 X Y {} ;coordinate axis assignment'.format(axis))  # coordinate axis assignment
+        #if axis is not None:
+        #    self.write('G16 X Y {} ;coordinate axis assignment'.format(axis))  # coordinate axis assignment
         self.write(plane_selector)
         args = self._format_args(**dims)
         if helix_dim is None:
@@ -976,7 +980,8 @@ class G(object):
     def _meander_spacing(self, minor, spacing):
         return minor / self._meander_passes(minor, spacing)
 
-    def _write_header(self):
+    def _write_header(self):        
+        #print(self.aerotech_include, self.header)
         if self.aerotech_include is True:
             with open(os.path.join(HERE, 'header.txt')) as fd:
                 self._write_out(lines=fd.readlines())
