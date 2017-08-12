@@ -897,6 +897,9 @@ class G(object):
         else:
             raise Exception("Invalid plotting backend! Choose one of mayavi or matplotlib.")
 
+    def comment(self, comment, resp_needed=False):
+        self.write('(' + comment + ')', resp_needed)
+
     def write(self, statement_in, resp_needed=False):
         if self.print_lines:
             print(statement_in)
