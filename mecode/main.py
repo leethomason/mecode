@@ -570,6 +570,91 @@ class G(object):
 
         self._update_current_position(**dims)
 
+    def arc2(self, x=None, y=None, z=None, 
+             cx=None, cy=None, cz=None, direction='CW',
+             helix_dim=None, helix_len=0, **kwargs):
+        """ Arc to the given point with the given radius and in the given
+        direction. If helix_dim and helix_len are specified then the tool head
+        will also perform a linear movement through the given dimension while
+        completing the arc.
+
+        Parameters
+        ----------
+        points : floats
+            Must specify two points as kwargs, e.g. x=5, y=5
+        direction : str (either 'CW' or 'CCW') (default: 'CW')
+            The direction to execute the arc in.
+        radius : 'auto' or float (default: 'auto')
+            The radius of the arc. A negative value will select the longer of
+            the two possible arc segments. If auto is selected the radius will
+            be set to half the linear distance to desired point.
+        helix_len : float
+            The length to move in the linear helix dimension.
+
+        Examples
+        --------
+        >>> # arc 10 mm up in y and 10 mm over in x with a radius of 20.
+        >>> g.arc(x=10, y=10, radius=20)
+
+        >>> # move 10 mm up on the A axis, arcing through y with a radius of 20
+        >>> g.arc(A=10, y=0, radius=20)
+
+        >>> # arc through x and y while moving linearly on axis A
+        >>> g.arc(x=10, y=10, radius=50, helix_dim='A', helix_len=5)
+
+        """
+        dims = dict(kwargs)
+        if x is not None:
+            dims['x'] = x
+        if y is not None:
+            dims['y'] = y
+        if z is not None:
+            dims['z'] = z
+        msg = 'Must specify two of x, y, or z.'
+        if len(dims) != 2:
+            raise RuntimeError(msg)
+
+        offset = {}
+        dimensions = [k.lower() for k in dims.keys()]
+        if 'x' in dimensions and 'y' in dimensions:
+            plane_selector = 'G17 ;XY plane'  # XY plane
+            if cx is None or cy is None:
+                raise RuntimeError('cx and cy must be specifieid')
+            offset['i'] = cx
+            offset['j'] = cy
+        elif 'x' in dimensions:
+            plane_selector = 'G18 ;XZ plane'  # XZ plane
+            if cx is None or cz is None:
+                raise RuntimeError('cx and cz must be specifieid')
+            offset['i'] = cx
+            offset['k'] = cz
+        elif 'y' in dimensions:
+            plane_selector = 'G19 ;YZ plane'  # YZ plane
+            if cy is None or cz is None:
+                raise RuntimeError('cy and cz must be specifieid')
+            offset['j'] = cy
+            offset['k'] = cz
+        else:
+            raise RuntimeError(msg)
+
+        if self.z_axis != 'Z':
+            axis = self.z_axis
+
+        if direction == 'CW':
+            command = 'G2'
+        elif direction == 'CCW':
+            command = 'G3'
+
+        self.write(plane_selector)
+        args = self._format_args(**dims)
+        center_args = self._format_args(**center)
+        if helix_dim is None:
+            self.write('{0} {1} {2}'.format(command, args, center_args))
+        else:
+            self.write('{0} {1} {2} {3}{2:.{digits}f}'.format(command, args, center_args, helix_dim, helix_len))
+
+        self._update_current_position(**dims)
+
     def abs_arc(self, direction='CW', radius='auto', **kwargs):
         """ Same as `arc` method, but positions are interpreted as absolute.
         """
