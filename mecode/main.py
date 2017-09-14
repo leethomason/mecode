@@ -570,6 +570,67 @@ class G(object):
 
         self._update_current_position(**dims)
 
+    def arc2(self, x=None, y=None, z=None, 
+             i=None, j=None, k=None,
+             direction='CW',
+             helix_dim=None, helix_len=0, **kwargs):
+
+        dims = dict(kwargs)
+        inc = {}
+
+        if x is not None:
+            dims['x'] = x
+            if i is None:
+                raise RuntimeError("x specified but not i")
+            inc['I'] = i
+        if y is not None:
+            dims['y'] = y
+            if j is None:
+                raise RuntimeError('y specified but not j')
+            inc['J'] = j
+        if z is not None:
+            dims['z'] = z
+            if k is None:
+                raise RuntimeError('z specified but not k')
+            inc['K'] = k
+        msg = 'Must specify two of x, y, or z.'
+        if len(dims) != 2:
+            raise RuntimeError(msg)
+
+        dimensions = [k.lower() for k in dims.keys()]
+        if 'x' in dimensions and 'y' in dimensions:
+            plane_selector = 'G17 ;XY plane'  # XY plane
+            axis = helix_dim
+        elif 'x' in dimensions:
+            plane_selector = 'G18 ;XZ plane'  # XZ plane
+            dimensions.remove('x')
+            axis = dimensions[0].upper()
+        elif 'y' in dimensions:
+            plane_selector = 'G19 ;YZ plane'  # YZ plane
+            dimensions.remove('y')
+            axis = dimensions[0].upper()
+        else:
+            raise RuntimeError(msg)
+
+        if self.z_axis != 'Z':
+            axis = self.z_axis
+
+        if direction == 'CW':
+            command = 'G2'
+        elif direction == 'CCW':
+            command = 'G3'
+
+        self.write(plane_selector)
+        args = self._format_args(**dims)
+        incArgs = self._format_args(**inc)
+        if helix_dim is None:
+            self.write('{0} {1} {2}'.format(command, args, incArgs))
+        else:
+            self.write('{0} {1} {2} {3}{4}'.format(command, args, incArgs, helix_dim.upper(), helix_len))
+            dims[helix_dim] = helix_len
+
+        self._update_current_position(**dims)
+
     def abs_arc(self, direction='CW', radius='auto', **kwargs):
         """ Same as `arc` method, but positions are interpreted as absolute.
         """
