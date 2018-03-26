@@ -564,7 +564,7 @@ class G(object):
             self.write('{0} {1} R{2:.{digits}f}'.format(command, args, radius,
                                                         digits=self.output_digits))
         else:
-            self.write('{0} {1} R{2:.{digits}f} G1 {3}{4}'.format(
+            self.write('{0} {1} R{2:.{digits}f} {3}{4}'.format(
                 command, args, radius, helix_dim.upper(), helix_len, digits=self.output_digits))
             dims[helix_dim] = helix_len
 
