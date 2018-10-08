@@ -112,6 +112,28 @@ class GMatrix(G):
         super(GMatrix, self).arc(x=x_prime,y=y_prime,z=z_prime,direction=direction,radius=radius,
                                  helix_dim=helix_dim, helix_len=helix_len,
                                  **kwargs)
+
+    def arc2(self, x=None, y=None, z=None, 
+             i=None, j=None, k=None,
+             direction='CW',
+             helix_dim=None, helix_len=0, **kwargs):
+
+        (x_prime,y_prime,z_prime) = self._matrix_transform(x,y,z)
+        if x is None: x_prime = None
+        if y is None: y_prime = None
+        if z is None: z_prime = None
+        if helix_len: helix_len = self._matrix_transform_length(helix_len)
+        (i_prime,j_prime,k_prime) = self._matrix_transform(i,j,k)
+        if i is None: i_prime = None
+        if j is None: j_prime = None
+        if k is None: k_prime = None
+        super(GMatrix, self).arc2(x=x_prime,y=y_prime,z=z_prime,
+                                  i=i_prime, j=j_prime, k=k_prime,
+                                  direction=direction,
+                                  helix_dim=helix_dim, helix_len=helix_len,
+                                  **kwargs)
+
+
     @property
     def current_position(self):
         x = self._current_position['x']

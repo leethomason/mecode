@@ -180,7 +180,7 @@ class G(object):
 
         self._socket = None
         self._p = None
-        self.laser_mode = False;
+        self.laser_mode = False
 
         # If the user passes in a line ending then we need to open the output
         # file in binary mode, otherwise python will try to be smart and
@@ -276,7 +276,7 @@ class G(object):
             The speed to move the tool head in (typically) mm/minute.
 
         """
-        self.write('G1 F{}'.format(rate))
+        self.write('F{}'.format(rate))  # UniversalGcodeSender is grumpy about the G F format. Try just F
         self.speed = rate
 
     def laser(self, mode=None, power=None):
@@ -421,6 +421,9 @@ class G(object):
             filament_length = ((4*volume)/(3.14149*self.filament_diameter**2))*self.extrusion_multiplier
             kwargs['E'] = filament_length + current_extruder_position
 
+        if self.speed <= 0:
+            raise RuntimeError("Move with 0 feed rate.")
+            
         self._update_current_position(x=x, y=y, z=z, **kwargs)
         args = self._format_args(x, y, z, **kwargs)
         cmd = 'G0 ' if rapid else 'G1 '
@@ -488,6 +491,9 @@ class G(object):
         >>> g.arc(x=10, y=10, radius=50, helix_dim='A', helix_len=5)
 
         """
+        if self.speed <= 0:
+            raise RuntimeError("arc with 0 feed rate.")
+
         dims = dict(kwargs)
         if x is not None:
             dims['x'] = x
@@ -574,6 +580,9 @@ class G(object):
              i=None, j=None, k=None,
              direction='CW',
              helix_dim=None, helix_len=0, **kwargs):
+
+        if self.speed <= 0:
+            raise RuntimeError("arc2 with 0 feed rate.")
 
         dims = dict(kwargs)
         inc = {}
