@@ -181,6 +181,7 @@ class G(object):
         self._socket = None
         self._p = None
         self.laser_mode = False
+        self.simple_transform = False
 
         # If the user passes in a line ending then we need to open the output
         # file in binary mode, otherwise python will try to be smart and
@@ -403,6 +404,9 @@ class G(object):
         >>> g.move(A=20)
 
         """
+
+        x, y, z = self.do_xform(x, y, z)
+
         if self.extrude is True and 'E' not in kwargs.keys():
             if self.is_relative is not True:
                 x_move = self.current_position['x'] if x is None else x
@@ -432,6 +436,7 @@ class G(object):
     def abs_move(self, x=None, y=None, z=None, rapid=False, **kwargs):
         """ Same as `move` method, but positions are interpreted as absolute.
         """
+        x, y, z = self.do_xform(x, y, z)
         if self.is_relative:
             self.absolute()
             self.move(x=x, y=y, z=z, rapid=rapid, **kwargs)
@@ -442,11 +447,13 @@ class G(object):
     def rapid(self, x=None, y=None, z=None, **kwargs):
         """ Executes an uncoordinated move to the specified location.
         """
+        x, y, z = self.do_xform(x, y, z)
         self.move(x, y, z, rapid=True, **kwargs)
 
     def abs_rapid(self, x=None, y=None, z=None, **kwargs):
         """ Executes an uncoordinated abs move to the specified location.
         """
+        x, y, z = self.do_xform(x, y, z)
         self.abs_move(x, y, z, rapid=True, **kwargs)
 
     def retract(self, retraction):
@@ -493,6 +500,8 @@ class G(object):
         """
         if self.speed <= 0:
             raise RuntimeError("arc with 0 feed rate.")
+
+        x, y, z = self.do_xform(x, y, z)
 
         dims = dict(kwargs)
         if x is not None:
@@ -583,6 +592,9 @@ class G(object):
 
         if self.speed <= 0:
             raise RuntimeError("arc2 with 0 feed rate.")
+
+        x, y, z = self.do_xform(x, y, z)
+        i, j, k = self.do_xform(i, j, k)
 
         dims = dict(kwargs)
         inc = {}
@@ -1020,6 +1032,14 @@ class G(object):
         else:
             msg = 'Must specify new name for x, y, or z only'
             raise RuntimeError(msg)
+
+    def do_simple_transform(self, enable):
+        self.simple_transform = enable
+
+    def do_xform(self, x, y, z):
+        if (self.simple_transform):
+            return -y if y else None, x, z
+        return x, y, z
 
     # Private Interface  ######################################################
 
